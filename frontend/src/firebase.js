@@ -11,9 +11,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
-const provider = new GoogleAuthProvider()
 
 export const signInWithGoogle = async () => {
+  const provider = new GoogleAuthProvider()
+  provider.setCustomParameters({ prompt: 'select_account' })
   const result = await signInWithPopup(auth, provider)
   const user = result.user
   const token = await getIdToken(user, true)
@@ -21,6 +22,8 @@ export const signInWithGoogle = async () => {
   return { user, token, claims: tokenResult.claims }
 }
 
-export const signOut = () => fbSignOut(auth)
+export const signOut = async () => {
+  await fbSignOut(auth)
+}
 
 export { auth, onAuthStateChanged, getIdToken, getIdTokenResult }
