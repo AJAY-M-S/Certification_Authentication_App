@@ -289,6 +289,12 @@ export default function ConductorIssue() {
                 <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.10)' }}>
                   <div>
                     <div style={{ fontWeight: 650 }}>{r.student_email}</div>
+                    {detailsCacheRef.current.get(String(r.token_id))?.issuer_name ? (
+                      <div style={{ opacity: 0.82, fontSize: 13, marginTop: 4 }}>{detailsCacheRef.current.get(String(r.token_id))?.issuer_name}</div>
+                    ) : null}
+                    {detailsCacheRef.current.get(String(r.token_id))?.skill_name ? (
+                      <div style={{ opacity: 0.74, fontSize: 13, marginTop: 4 }}>{detailsCacheRef.current.get(String(r.token_id))?.skill_name}</div>
+                    ) : null}
                     <div style={{ opacity: 0.74, fontSize: 13, marginTop: 4 }}>Certificate ID {r.token_id}</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
