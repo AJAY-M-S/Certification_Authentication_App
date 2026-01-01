@@ -53,7 +53,6 @@ async def issue_credential_by_email(
     cred = Credential(
         student_email=str(payload.student_email),
         issued_by_email=str(issuer_email),
-        issuer_name=str(payload.issuer_name) if payload.issuer_name else None,
         contract_address=settings.contract_address,
         token_id=int(token_id),
         transaction_hash=tx_hash,

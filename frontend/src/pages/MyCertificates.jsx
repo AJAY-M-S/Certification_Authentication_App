@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { listMyCredentials, verifyCertificate, setDevUser, loadDevUser } from '../services/api'
 
 export default function MyCertificates() {
@@ -10,6 +10,8 @@ export default function MyCertificates() {
   const [detailsLoading, setDetailsLoading] = useState(false)
   const [detailsError, setDetailsError] = useState('')
   const [email, setEmail] = useState('student@example.com')
+  const issuerNameCacheRef = useRef(new Map())
+  const [issuerNames, setIssuerNames] = useState({})
 
   const formatDate = (value) => {
     try {
@@ -62,6 +64,42 @@ export default function MyCertificates() {
     }
   }
 
+  const hydrateIssuerName = async (tokenId) => {
+    const key = String(tokenId)
+    if (issuerNameCacheRef.current.has(key)) return
+    issuerNameCacheRef.current.set(key, { status: 'loading' })
+    try {
+      const res = await verifyCertificate(tokenId)
+      const name = res?.issuer_name || ''
+      issuerNameCacheRef.current.set(key, { status: 'ready', name })
+      if (name) {
+        setIssuerNames((prev) => ({ ...prev, [key]: name }))
+      }
+    } catch {
+      issuerNameCacheRef.current.set(key, { status: 'error' })
+    }
+  }
+
+  useEffect(() => {
+    // Prefetch issuer names in background so list shows names (not emails) without user clicks.
+    let cancelled = false
+    const run = async () => {
+      const list = (rows || []).map((r) => r?.token_id).filter((v) => v !== undefined && v !== null)
+      const concurrency = 3
+      let i = 0
+      const workers = new Array(Math.min(concurrency, list.length)).fill(0).map(async () => {
+        while (!cancelled && i < list.length) {
+          const tokenId = list[i]
+          i += 1
+          await hydrateIssuerName(tokenId)
+        }
+      })
+      await Promise.all(workers)
+    }
+    if (rows?.length) run()
+    return () => { cancelled = true }
+  }, [rows])
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, marginBottom: 10 }}>
@@ -94,7 +132,7 @@ export default function MyCertificates() {
           {rows.map((r) => (
             <div key={r.id} style={{ padding: '14px 0', borderBottom: '1px solid rgba(15, 23, 42, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
               <div>
-                <div style={{ fontWeight: 650, letterSpacing: '-0.01em' }}>{r.issuer_name || r.issued_by_email}</div>
+                <div style={{ fontWeight: 650, letterSpacing: '-0.01em' }}>{issuerNames[String(r.token_id)] || r.issued_by_email}</div>
                 <div style={{ color: 'rgba(91, 103, 122, 0.9)', fontSize: 13, marginTop: 4 }}>Issued on {formatDate(r.created_at)}</div>
               </div>
               <button className="btn btn--ghost" onClick={() => viewDetails(r.token_id)} disabled={detailsLoading}>

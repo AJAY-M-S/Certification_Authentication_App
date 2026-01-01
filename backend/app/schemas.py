@@ -20,7 +20,6 @@ class CredentialRecord(BaseModel):
     id: int
     student_email: EmailStr
     issued_by_email: EmailStr
-    issuer_name: str | None = None
 
     contract_address: str
     token_id: int
