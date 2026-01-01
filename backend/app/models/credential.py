@@ -15,6 +15,7 @@ class Credential(Base):
 
     student_email: Mapped[str] = mapped_column(String(320), index=True, nullable=False)
     issued_by_email: Mapped[str] = mapped_column(String(320), index=True, nullable=False)
+    issuer_name: Mapped[str | None] = mapped_column(String(160), nullable=True)
 
     contract_address: Mapped[str] = mapped_column(String(64), index=True, nullable=False)
     token_id: Mapped[int] = mapped_column(Integer, index=True, nullable=False)

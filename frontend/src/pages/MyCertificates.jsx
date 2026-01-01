@@ -94,7 +94,7 @@ export default function MyCertificates() {
           {rows.map((r) => (
             <div key={r.id} style={{ padding: '14px 0', borderBottom: '1px solid rgba(15, 23, 42, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
               <div>
-                <div style={{ fontWeight: 650, letterSpacing: '-0.01em' }}>{r.issued_by_email}</div>
+                <div style={{ fontWeight: 650, letterSpacing: '-0.01em' }}>{r.issuer_name || r.issued_by_email}</div>
                 <div style={{ color: 'rgba(91, 103, 122, 0.9)', fontSize: 13, marginTop: 4 }}>Issued on {formatDate(r.created_at)}</div>
               </div>
               <button className="btn btn--ghost" onClick={() => viewDetails(r.token_id)} disabled={detailsLoading}>
