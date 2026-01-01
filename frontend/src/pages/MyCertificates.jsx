@@ -12,6 +12,7 @@ export default function MyCertificates() {
   const [email, setEmail] = useState('student@example.com')
   const issuerNameCacheRef = useRef(new Map())
   const [issuerNames, setIssuerNames] = useState({})
+  const [skills, setSkills] = useState({})
 
   const formatDate = (value) => {
     try {
@@ -71,9 +72,13 @@ export default function MyCertificates() {
     try {
       const res = await verifyCertificate(tokenId)
       const name = res?.issuer_name || ''
-      issuerNameCacheRef.current.set(key, { status: 'ready', name })
+      const skill = res?.skill_name || ''
+      issuerNameCacheRef.current.set(key, { status: 'ready', name, skill })
       if (name) {
         setIssuerNames((prev) => ({ ...prev, [key]: name }))
+      }
+      if (skill) {
+        setSkills((prev) => ({ ...prev, [key]: skill }))
       }
     } catch {
       issuerNameCacheRef.current.set(key, { status: 'error' })
@@ -133,6 +138,9 @@ export default function MyCertificates() {
             <div key={r.id} style={{ padding: '14px 0', borderBottom: '1px solid rgba(15, 23, 42, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
               <div>
                 <div style={{ fontWeight: 650, letterSpacing: '-0.01em' }}>{issuerNames[String(r.token_id)] || r.issued_by_email}</div>
+                {skills[String(r.token_id)] ? (
+                  <div style={{ color: 'rgba(91, 103, 122, 0.9)', fontSize: 13, marginTop: 4 }}>{skills[String(r.token_id)]}</div>
+                ) : null}
                 <div style={{ color: 'rgba(91, 103, 122, 0.9)', fontSize: 13, marginTop: 4 }}>Issued on {formatDate(r.created_at)}</div>
               </div>
               <button className="btn btn--ghost" onClick={() => viewDetails(r.token_id)} disabled={detailsLoading}>
