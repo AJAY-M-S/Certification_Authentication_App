@@ -17,9 +17,17 @@ def init_firebase() -> None:
     if _app_initialized:
         return
     settings = get_settings()
-    if not settings.firebase_credentials_path:
-        raise RuntimeError("FIREBASE_CREDENTIALS_PATH not set")
-    cred = credentials.Certificate(settings.firebase_credentials_path)
+    cred: credentials.Base
+    if settings.firebase_service_account_json:
+        try:
+            service_account_info = json.loads(settings.firebase_service_account_json)
+        except Exception as e:
+            raise RuntimeError(f"FIREBASE_SERVICE_ACCOUNT_JSON is not valid JSON: {e}")
+        cred = credentials.Certificate(service_account_info)
+    else:
+        if not settings.firebase_credentials_path:
+            raise RuntimeError("FIREBASE_CREDENTIALS_PATH not set")
+        cred = credentials.Certificate(settings.firebase_credentials_path)
     firebase_admin.initialize_app(cred, {
         'projectId': settings.firebase_project_id,
     })

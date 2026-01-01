@@ -19,7 +19,8 @@ This repo includes `render.yaml` configured to deploy the backend from `backend/
 
 On Render, set these environment variables (see `backend/.env.example`):
 - `FIREBASE_PROJECT_ID`
-- `FIREBASE_CREDENTIALS_PATH` (or mount the JSON via Render secret file)
+- `FIREBASE_SERVICE_ACCOUNT_JSON` (paste the Firebase service account JSON contents)
+- `FIREBASE_CREDENTIALS_PATH` (optional; for local file-based usage)
 - `PINATA_API_KEY`
 - `PINATA_SECRET_KEY`
 - `POLYGON_RPC_URL`

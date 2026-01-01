@@ -16,6 +16,7 @@ load_dotenv()
 class Settings:
     firebase_project_id: Optional[str]
     firebase_credentials_path: Optional[str]
+    firebase_service_account_json: Optional[str]
 
     pinata_api_key: Optional[str]
     pinata_secret_key: Optional[str]
@@ -34,6 +35,7 @@ class Settings:
 def get_settings() -> Settings:
     firebase_project_id = os.getenv("FIREBASE_PROJECT_ID")
     firebase_credentials_path = os.getenv("FIREBASE_CREDENTIALS_PATH")
+    firebase_service_account_json = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
 
     pinata_api_key = os.getenv("PINATA_API_KEY")
     pinata_secret_key = os.getenv("PINATA_SECRET_KEY")
@@ -61,6 +63,7 @@ def get_settings() -> Settings:
     return Settings(
         firebase_project_id=firebase_project_id,
         firebase_credentials_path=firebase_credentials_path,
+        firebase_service_account_json=firebase_service_account_json,
         pinata_api_key=pinata_api_key,
         pinata_secret_key=pinata_secret_key,
         polygon_rpc_url=polygon_rpc_url,
